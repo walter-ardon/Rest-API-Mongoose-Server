@@ -5,7 +5,12 @@ import helmet from 'helmet'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import connectMongoDB from './models/mongoose.js'
-import Article from './models/article.js'
+import {
+    getArticle,
+    getArticles,
+    insertArticle,
+    updateArticle
+} from './api/api.js'
 
 // configure app
 const app = express()
@@ -19,9 +24,28 @@ app.use(morgan('combined'))
 connectMongoDB()
 
 // configure endpoints
-app.get('/articles', async (req, res) => {
-    const articles = await Article.find({})
+app.get('/articles/', async (req, res) => {
+    const articles = await getArticles()
     res.send(articles)
+})
+
+app.get('/articles/:id', async (req, res) => {
+    const id = req.params.id
+    const article = await getArticle(id)
+    res.send(article)
+})
+
+app.post('/articles/', async (req, res) => {
+    const article = req.body
+    const result = await insertArticle(article)
+    res.send(result)
+})
+
+app.put('/articles/:id', async (req, res) => {
+    const id = req.params.id
+    const article = req.body
+    const result = await updateArticle(id, article)
+    res.send(result)
 })
 
 // app listening
